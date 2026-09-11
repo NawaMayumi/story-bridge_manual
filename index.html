@@ -196,6 +196,14 @@
   .gap-card .gap-now { margin: 8px 0 0; color: var(--ink-soft); font-size: 0.93rem; max-width: none; }
   .gap-card .gap-fix { margin: 10px 0 0; padding: 10px 12px; background: var(--surface-2); border-radius: 8px; font-size: 0.93rem; color: var(--ink); max-width: none; }
   .gap-card .gap-fix b { color: var(--flag); }
+  .section-link {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid var(--line);
+    border-radius: 10px; background: var(--surface); text-decoration: none; box-shadow: var(--shadow);
+    font-size: 0.9rem; font-weight: 600; color: var(--ink);
+  }
+  .section-link:hover { border-color: var(--brand); }
+  .section-link .arrow { flex: none; }
+  .link-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 24px; }
   .rank-legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 22px; }
   .rank-legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--ink-soft); }
   .rank-legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
@@ -307,7 +315,16 @@
     <div class="sec-head"><span class="sec-num">02</span><h2>全体の仕組み</h2></div>
     <p class="sec-sub">誰が・どのURLで・何をするか</p>
 
-    <p>Story Bridgeは1つの大きなアプリではなく、役割の異なる2つの<button class="term" type="button">Apps Script Webアプリ<span class="tip">Googleのサーバー上でJavaScript（Apps Script）を実行し、ブラウザからアクセスできる画面として公開する仕組み。サーバーを自分で借りたり管理したりする必要がない。</span></button>、<strong>Creator</strong>と<strong>Reader</strong>でできています。</p>
+    <p>Story Bridgeは1つの大きなアプリではなく、役割の異なる2つの<button class="term" type="button">Apps Script Webアプリ<span class="tip">Googleのサーバー上でJavaScript（Apps Script）を実行し、ブラウザからアクセスできる画面として公開する仕組み。サーバーを自分で借りたり管理したりする必要がない。</span></button>、<a href="https://script.google.com/macros/s/AKfycbzap3EGO5S3T3DA8QKqb8Je2WWXynU04HmeB_cGX3TaXDtlH2BO7RZyltDK5oA2vhNbMg/exec" target="_blank" rel="noopener"><strong>Creator</strong></a>と<a href="https://script.google.com/macros/s/AKfycbxQrFPf48eAVI4L_AjITleL-b6oH0fHIU-Vyjz8BCbGyDhwg_5WRRmfvLo2vwaQiBgk1A/exec" target="_blank" rel="noopener"><strong>Reader</strong></a>でできています。</p>
+
+    <div class="link-row">
+      <a class="section-link" href="https://script.google.com/macros/s/AKfycbzap3EGO5S3T3DA8QKqb8Je2WWXynU04HmeB_cGX3TaXDtlH2BO7RZyltDK5oA2vhNbMg/exec" target="_blank" rel="noopener">
+        <span class="arrow">🔗</span><span>Creatorページ</span>
+      </a>
+      <a class="section-link" href="https://script.google.com/macros/s/AKfycbxQrFPf48eAVI4L_AjITleL-b6oH0fHIU-Vyjz8BCbGyDhwg_5WRRmfvLo2vwaQiBgk1A/exec" target="_blank" rel="noopener">
+        <span class="arrow">🔗</span><span>Readerページ</span>
+      </a>
+    </div>
 
     <div class="facts" style="grid-template-columns: 1fr;">
       <div class="fact">
