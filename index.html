@@ -298,35 +298,26 @@
       <div class="fact"><p class="fact-label">対応言語</p><p class="fact-value">英語のみ</p></div>
       <div class="fact"><p class="fact-label">使用AI</p><p class="fact-value"><button class="term" type="button">Gemini Developer API<span class="tip">Story Bridgeが呼び出しているGoogleの生成AI API。学校のGoogle Workspaceに標準で入っているGeminiアプリ（チャット画面）とは別サービスで、利用枠も別に管理される。</span></button>（既定モデルは<button class="term" type="button">gemini-3.6-flash<span class="tip">Creatorが最初に呼び出すモデル名。応答に失敗した場合はgemini-3.1-flash-liteに自動で切り替わる。</span></button>）</p></div>
       <div class="fact"><p class="fact-label">端末</p><p class="fact-value">Chromebookなどブラウザが動く端末（カメラ・マイク任意）</p></div>
-      <div class="fact"><p class="fact-label">現在の中心アプリ</p><p class="fact-value">Google Apps Script版：Creator / Reader（セットアップ専用だったMakerは役目を終えて取り壊し済み）</p></div>
-      <div class="fact"><p class="fact-label">データ保存先</p><p class="fact-value">サーバーDBなし。学校の<button class="term" type="button">共有ドライブ<span class="tip">個人ではなく組織（学校）が所有するGoogle Driveの領域。担当者が異動しても中身が残る。</span></button> + <button class="term" type="button">Story Bridge Library Data<span class="tip">Books・Pages・Contributorsの3シートを持つGoogleスプレッドシート。セットアップ時にMakerが自動作成した。</span></button>スプレッドシート</p></div>
+      <div class="fact"><p class="fact-label">現在の中心アプリ</p><p class="fact-value">Google Apps Script版：Creator / Reader</p></div>
+      <div class="fact"><p class="fact-label">データ保存先</p><p class="fact-value">サーバーDBなし。学校の<button class="term" type="button">共有ドライブ<span class="tip">個人ではなく組織（学校）が所有するGoogle Driveの領域。担当者が異動しても中身が残る。</span></button> + <button class="term" type="button">Story Bridge Library Data<span class="tip">Books・Pages・Contributorsの3シートを持つGoogleスプレッドシート。本の情報はここに保存される。</span></button>スプレッドシート</p></div>
     </div>
   </section>
 
   <section id="system">
-    <div class="sec-head"><span class="sec-num">02</span><h2>全体の仕組み（3つのアプリ）</h2></div>
+    <div class="sec-head"><span class="sec-num">02</span><h2>全体の仕組み</h2></div>
     <p class="sec-sub">誰が・どのURLで・何をするか</p>
 
-    <p>Story Bridgeは1つの大きなアプリではなく、役割の異なる<button class="term" type="button">Apps Script Webアプリ<span class="tip">Googleのサーバー上でJavaScript（Apps Script）を実行し、ブラウザからアクセスできる画面として公開する仕組み。サーバーを自分で借りたり管理したりする必要がない。</span></button>でできています。日常的に開くのは<strong>Creator</strong>と<strong>Reader</strong>の2つだけです。</p>
+    <p>Story Bridgeは1つの大きなアプリではなく、役割の異なる2つの<button class="term" type="button">Apps Script Webアプリ<span class="tip">Googleのサーバー上でJavaScript（Apps Script）を実行し、ブラウザからアクセスできる画面として公開する仕組み。サーバーを自分で借りたり管理したりする必要がない。</span></button>、<strong>Creator</strong>と<strong>Reader</strong>でできています。</p>
 
     <div class="facts" style="grid-template-columns: 1fr;">
       <div class="fact">
         <p class="fact-label">Creator（先生+子ども用・毎回使う）</p>
-        <p class="fact-value">子どもとGeminiの対話をファシリテートし、物語・ページ割り・挿絵をまとめて「学校の本棚」へ公開するアプリ。<code>google-workspace/creator-app/</code></p>
+        <p class="fact-value">子どもとGeminiの対話をファシリテートし、物語・ページ割り・挿絵をまとめて「学校の本棚」へ公開するアプリ。</p>
       </div>
       <div class="fact">
         <p class="fact-label">Reader（子ども用・毎回使う）</p>
-        <p class="fact-value">公開済みの本だけを読める、読み取り専用の本棚アプリ。保存・編集・削除・Gemini呼び出しの機能は一切持たない。<code>google-workspace/reader/</code></p>
+        <p class="fact-value">公開済みの本だけを読める、読み取り専用の本棚アプリ。保存・編集・削除・Gemini呼び出しの機能は一切持たない。</p>
       </div>
-      <div class="fact">
-        <p class="fact-label">Maker（管理者用・初回セットアップのみ）</p>
-        <p class="fact-value">共有ドライブのフォルダとStory Bridge Library Dataスプレッドシートを自動で作る、初回セットアップ専用ツール。セットアップが終われば役目を終える一度きりの道具で、このプロジェクトでは<strong>セットアップ完了後にすでに取り壊し済み</strong>。<code>google-workspace/maker/</code>にコードは残る。</p>
-      </div>
-    </div>
-
-    <div class="notice quiet">
-      <span class="notice-label">MakerはCreatorへ直接つながっていなかった</span>
-      <p>Makerには「Creatorとの接続トークンを作る」というステップがありましたが、これは旧Node.jsプロトタイプがMakerへHTTPで本を送信していた頃の設計です。Creator（Apps Script版）は自分自身のスクリプトプロパティ（<code>SB_SPREADSHEET_ID</code>・<code>SB_PUBLISHED_FOLDER_ID</code>）を使ってスプレッドシートとドライブに直接書き込むため、このトークンは使われないまま取り壊されました。</p>
     </div>
 
     <h3>本が公開されるまでの流れ</h3>
@@ -416,28 +407,19 @@
 
   <section id="security">
     <div class="sec-head"><span class="sec-num">05</span><h2>アクセス管理</h2></div>
-    <p class="sec-sub">誰がどこまで開けるか、旧プロトタイプとの違い</p>
+    <p class="sec-sub">誰がどこまで開けるか</p>
 
-    <p>Creator・Reader・Makerのどのアプリにも、パスワードやアクセスコードを入力する専用画面は<strong>ありません</strong>。アクセス制御は、Google Apps Scriptを<button class="term" type="button">Webアプリとしてデプロイ<span class="tip">Apps Scriptエディタ右上の「デプロイ」→「新しいデプロイ」から行う操作。ここで「実行ユーザー」と「アクセスできるユーザー」を選ぶことで、誰がそのURLを開けるかが決まる。</span></button>する際の「実行ユーザー」「アクセスできるユーザー」の設定だけに依存しています。</p>
+    <p>Creator・Readerのどちらのアプリにも、パスワードやアクセスコードを入力する専用画面は<strong>ありません</strong>。アクセス制御は、Google Apps Scriptを<button class="term" type="button">Webアプリとしてデプロイ<span class="tip">Apps Scriptエディタ右上の「デプロイ」→「新しいデプロイ」から行う操作。ここで「実行ユーザー」と「アクセスできるユーザー」を選ぶことで、誰がそのURLを開けるかが決まる。</span></button>する際の「実行ユーザー」「アクセスできるユーザー」の設定だけに依存しています。</p>
 
     <div class="facts" style="grid-template-columns: 1fr;">
       <div class="fact">
         <p class="fact-label">Creator</p>
-        <p class="fact-value">推奨: 実行ユーザーは各先生自身、アクセスできるユーザーは学校のGoogle Workspace組織内に限定。旧Node.jsプロトタイプにあった<code>STORY_BRIDGE_ACCESS_CODE</code>のようなアクセスコード画面は、Apps Script版には存在しません。</p>
+        <p class="fact-value">推奨: 実行ユーザーは各先生自身、アクセスできるユーザーは学校のGoogle Workspace組織内に限定。</p>
       </div>
       <div class="fact">
         <p class="fact-label">Reader</p>
         <p class="fact-value">推奨: 実行ユーザーは管理者（デプロイした本人）、アクセスできるユーザーは学校組織内に限定。児童は自分のGoogleアカウントでログインする必要はなく、URLを開くだけで読める。</p>
       </div>
-      <div class="fact">
-        <p class="fact-label">Maker</p>
-        <p class="fact-value">最初にログインしてMakerを開いたGoogleアカウントが、そのまま唯一の管理者として固定される仕様（<code>requireAdmin_()</code>）。別のアカウントで開くとエラーになる。SETUP-GUIDE.mdにはこの説明がないため、最初に開くアカウントを間違えないよう注意。</p>
-      </div>
-    </div>
-
-    <div class="notice">
-      <span class="notice-label">ディスク上に残っている実際の秘密情報</span>
-      <p><code>prototype/.env</code>と<code>prototype/.demo-access.txt</code>には、過去の先生向けデモで使ったとみられる実際のGemini APIキーとアクセスコードがそのまま残っています。どちらも<code>.gitignore</code>によってGitへのコミット対象からは外れていますが、ディスク上には存在したままです。使い回さず、ローテーション（無効化して新しいキーに差し替え）することをおすすめします。</p>
     </div>
   </section>
 
@@ -445,12 +427,12 @@
     <div class="sec-head"><span class="sec-num">06</span><h2>Gemini APIキーの管理</h2></div>
     <p class="sec-sub">今入っているキーは個人のもの。学校運用に移す前に差し替える</p>
 
-    <p>Gemini呼び出しを行うのはCreatorだけです。ReaderとMakerはGemini APIを一切呼び出さないため、キーの設定は不要です。CreatorはAPIキーをブラウザへは送らず、<button class="term" type="button">スクリプトプロパティ<span class="tip">Apps Scriptプロジェクトごとにサーバー側だけで保持される設定値の保存場所。PropertiesServiceというAPIから読み書きする。値はブラウザのJavaScriptには渡らない。</span></button>に保存した値を、サーバー側の<button class="term" type="button">UrlFetchApp<span class="tip">Apps ScriptからGeminiのような外部APIをサーバー側で呼び出すための命令。ブラウザを経由しないため、APIキーが外に漏れにくい。</span></button>（<code>UrlFetchApp.fetch</code>）からGeminiへ直接送っています。</p>
+    <p>Gemini呼び出しを行うのはCreatorだけです。ReaderはGemini APIを一切呼び出さないため、キーの設定は不要です。CreatorはAPIキーをブラウザへは送らず、<button class="term" type="button">スクリプトプロパティ<span class="tip">Apps Scriptプロジェクトごとにサーバー側だけで保持される設定値の保存場所。PropertiesServiceというAPIから読み書きする。値はブラウザのJavaScriptには渡らない。</span></button>に保存した値を、サーバー側の<button class="term" type="button">UrlFetchApp<span class="tip">Apps ScriptからGeminiのような外部APIをサーバー側で呼び出すための命令。ブラウザを経由しないため、APIキーが外に漏れにくい。</span></button>（<code>UrlFetchApp.fetch</code>）からGeminiへ直接送っています。</p>
 
     <div class="facts" style="grid-template-columns: 1fr;">
       <div class="fact"><p class="fact-label">GEMINI_API_KEY</p><p class="fact-value">必須。未設定だとGeminiを呼ばずに固定の練習用応答を返す「デモモード」で動く（画面右上のピルが「Free demo」と表示される）。</p></div>
       <div class="fact"><p class="fact-label">GEMINI_MODEL</p><p class="fact-value">任意。既定は<code>gemini-3.6-flash</code>（失敗時は<code>gemini-3.1-flash-lite</code>に自動フォールバック）。通常は設定しなくてよい。</p></div>
-      <div class="fact"><p class="fact-label">SB_SPREADSHEET_ID / SB_PUBLISHED_FOLDER_ID</p><p class="fact-value">Gemini用ではないが同じスクリプトプロパティ画面にある。Makerが表示する値をコピーして設定する（Part 3・Part 4相当）。未設定だと公開機能が使えない。</p></div>
+      <div class="fact"><p class="fact-label">SB_SPREADSHEET_ID / SB_PUBLISHED_FOLDER_ID</p><p class="fact-value">Gemini用ではないが同じスクリプトプロパティ画面にある。学校の本棚用スプレッドシートと公開フォルダのIDを設定する。未設定だと公開機能が使えない。</p></div>
     </div>
 
     <p>画面右上の接続ピルで、今どのキーが効いているかがひと目で分かります。</p>
@@ -477,7 +459,7 @@
         </ol>
         <div class="notice quiet" style="margin-top:4px;">
           <span class="notice-label">再デプロイは不要</span>
-          <p>スクリプトプロパティの変更は、Webアプリを新しくデプロイし直さなくても次回の実行からすぐに反映されます（Node.js版で環境変数を変えるたびに必要だった再デプロイは不要）。</p>
+          <p>スクリプトプロパティの変更は、Webアプリを新しくデプロイし直さなくても次回の実行からすぐに反映されます。</p>
         </div>
       </div>
     </details>
@@ -521,7 +503,7 @@
       <div class="gloss-row"><div class="gloss-term">gemini-3.6-flash 等</div><div class="gloss-def">Creatorが最初に呼び出すモデル名（既定値）。応答に失敗した場合はgemini-3.1-flash-liteに自動で切り替わる。</div></div>
       <div class="gloss-row"><div class="gloss-term">429エラー</div><div class="gloss-def">Gemini APIの無料枠の上限に一時的に達したときに返るエラー。数分待てば再び使えるようになることが多い。</div></div>
       <div class="gloss-row"><div class="gloss-term">共有ドライブ</div><div class="gloss-def">個人ではなく組織（学校）が所有するGoogle Driveの領域。担当者が異動しても中身が残る。</div></div>
-      <div class="gloss-row"><div class="gloss-term">Story Bridge Library Data</div><div class="gloss-def">Books・Pages・Contributorsの3シートを持つGoogleスプレッドシート。セットアップ時にMakerが自動作成した、本の情報の保存先。</div></div>
+      <div class="gloss-row"><div class="gloss-term">Story Bridge Library Data</div><div class="gloss-def">Books・Pages・Contributorsの3シートを持つGoogleスプレッドシート。本の情報が保存される場所。</div></div>
       <div class="gloss-row"><div class="gloss-term">publishBook</div><div class="gloss-def">Creatorが本を確定して公開するときに呼び出すサーバー側の関数名。スプレッドシートへの行追加とドライブへの画像保存をまとめて行う。</div></div>
       <div class="gloss-row"><div class="gloss-term">readyToWrite</div><div class="gloss-def">Geminiが会話の中で返す値のひとつ。物語を書き始めるのに十分な材料（はじまり・変化・行動・終わりの感情）が揃ったと判断するとtrueになり、「Make our story」が押せるようになる。</div></div>
       <div class="gloss-row"><div class="gloss-term">Picture feeling</div><div class="gloss-def">挿絵の雰囲気を選ぶ項目。Cute・Cool・Funny・Magical・Cozy・Colorfulの6種類、または自由入力から選ぶ。</div></div>
@@ -530,7 +512,7 @@
   </section>
 
   <footer>
-    <p>参照元: <code>docs/concept.html</code>・<code>docs/deployment-and-handover.md</code>・<code>docs/story-conversation-framework.md</code>・<code>docs/illustration-pipeline.md</code>・<code>google-workspace/</code>以下の各Code.gs／HTML・<code>google-workspace/NEW-ARCHITECTURE.md</code>・<code>google-workspace/SETUP-GUIDE.md</code>／本書は2026-09-11時点のコードを直接確認して作成しました。</p>
+    <p>最終更新: 2026-09-11</p>
   </footer>
 
 </div>
