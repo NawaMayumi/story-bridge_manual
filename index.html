@@ -222,6 +222,14 @@
   details.accordion summary .sum-sub { font-weight: 400; font-size: 0.82rem; color: var(--ink-faint); display: block; margin-top: 3px; }
   details.accordion .accordion-body { padding: 4px 20px 22px; border-top: 1px solid var(--line); }
   details.accordion ol.flow { margin-top: 18px; }
+  details.accordion.urgent { border: 2px solid var(--flag); background: var(--flag-soft); }
+  details.accordion.urgent summary { padding-right: 16px; }
+  details.accordion.urgent summary .chev { color: var(--flag); }
+  details.accordion.urgent .accordion-body { background: var(--surface); border-top: 1px solid var(--flag); }
+  .must-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; letter-spacing: 0.04em; font-weight: 700;
+    padding: 3px 9px; border-radius: 999px; background: var(--flag); color: #fff; flex: none; white-space: nowrap;
+  }
 
   /* to-line */
   .to-line { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
@@ -254,7 +262,7 @@
       <a href="#howto-reader">04 Readerの使い方</a>
       <a href="#security">05 アクセス管理</a>
       <a href="#gemini-key">06 Gemini APIキー</a>
-      <a href="#roadmap">07 足りないところ</a>
+      <a href="#roadmap">07 今後の展望</a>
       <a href="#glossary">用語集</a>
     </nav>
   </div>
@@ -394,11 +402,6 @@
       <li><strong class="step-title">挿絵スタジオで挿絵を用意する</strong><span class="step-tag">Story Bridgeの外での作業</span><span class="step-d">Creatorは挿絵を自動生成しません。①キャラクター参照シート用のプロンプトをコピーし、Google WorkspaceのGeminiアプリ（Story Bridgeとは別画面）に貼って画像を作り、ダウンロードしてアップロードで戻す。②全ページ分の長いプロンプトを同じGeminiの会話に貼り、「Next」と送るたびに1ページずつ画像をもらってダウンロード。③できた画像をページ番号ごとにアップロードする。1ページだけ気に入らない場合は「Fix this page」で個別にやり直せる。</span></li>
       <li><strong class="step-title">貢献者情報を入力して公開する</strong><span class="step-d">「Student or group name」「Class」を入力し、「I confirm that the teacher has checked this book and its contributor information」にチェックを入れると「Publish to school library」が押せる。押すとサーバー側の<button class="term" type="button">publishBook<span class="tip">Creatorが本を確定して公開するときに呼び出すサーバー側の関数名。スプレッドシートへの行追加とドライブへの画像保存をまとめて行う。</span></button>が本をスプレッドシートとドライブに保存し、Readerの本棚に並ぶ。</span></li>
     </ol>
-
-    <div class="notice">
-      <span class="notice-label">下書き保存はない（要確認）</span>
-      <p>現在のCode.gsには「Save draft（下書き保存）」に相当する関数が見当たりません。公開前にタブを閉じたり再読み込みしたりした場合に会話・物語・挿絵が失われるかどうかは、実機での確認を推奨します（<a href="#roadmap">07章</a>参照）。</p>
-    </div>
   </section>
 
   <section id="howto-reader">
@@ -411,11 +414,6 @@
       <li><strong class="step-title">1ページずつ読む</strong><span class="step-d">← Previous / Next → の矢印（キーボードの矢印キーにも対応）でページ送り。🔊 Read を押すとブラウザの読み上げ（英語）でページの文章を読み上げる。</span></li>
       <li><strong class="step-title">最後のページで本棚に戻る</strong><span class="step-d">最終ページではNext →ボタンが「Library →」に変わり、押すと本棚に戻る。</span></li>
     </ol>
-
-    <div class="notice quiet">
-      <span class="notice-label">興味タグ検索・その場での新規生成は未実装</span>
-      <p>初期の構想（<code>docs/concept.html</code>）では、Readerに「興味タグで本を探す」機能と「その場でアイデアを入力して新しい物語をその場で生成する」機能の2つが計画されていました。現在のReaderにはどちらもなく、<strong>公開済みの本を新しい順に並べて見せるだけ</strong>の、検索・フィルターなしのシンプルな本棚です。ログイン画面もなく、先生・貢献者情報の編集機能も一切ありません。</p>
-    </div>
   </section>
 
   <section id="security">
@@ -464,9 +462,10 @@
       <div class="fact"><p class="fact-label">Gemini error / Offline</p><p class="fact-value">キーは設定されているが呼び出しに失敗、または接続確認自体ができなかった状態。</p></div>
     </div>
 
-    <details class="accordion">
+    <details class="accordion urgent" open>
       <summary>
-        <span>Gemini APIキーを差し替える手順を見る<span class="sum-sub">個人のキーから学校用のキーへ切り替えるとき・キーが流出したときに使う</span></span>
+        <span>Gemini APIキーを差し替える手順を見る<span class="sum-sub">学校の正式運用に移す前に、必ずこの手順で学校用のキーへ差し替えてください</span></span>
+        <span class="must-badge">必ず対応</span>
         <span class="chev">▸</span>
       </summary>
       <div class="accordion-body">
@@ -495,45 +494,19 @@
   </section>
 
   <section id="roadmap">
-    <div class="sec-head"><span class="sec-num">07</span><h2>足りないところ・次にやること</h2></div>
-    <p class="sec-sub">今のStory Bridgeに欠けている部分を、優先度の高い順に並べます</p>
-
-    <div class="rank-legend">
-      <span><span class="dot" style="background:var(--flag);"></span>必須（学校運用に移す前に対応）</span>
-      <span><span class="dot" style="background:var(--status-todo-ink);"></span>重要（早めに対応）</span>
-      <span><span class="dot" style="background:var(--status-later-ink);"></span>検討（声が高まってから）</span>
-    </div>
-
-    <div class="notice info" style="margin-top:0;">
-      <span class="notice-label">対応済み</span>
-      <p>旧<code>docs/story-bridge-manual.md</code>は削除し、<code>docs/deployment-and-handover.md</code>の冒頭に本書へのリンクを追記しました。Makerもセットアップ完了後に取り壊し済みのため、「ステップ4の接続トークンが死んだ機能のまま残っている」問題も解消しています（02章参照）。</p>
-    </div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>今後の展望</h2></div>
+    <p class="sec-sub">今のStory Bridgeにまだ無い機能で、今後広げていけそうなところ</p>
 
     <div class="stack">
       <div class="card gap-card">
-        <div class="card-head"><h4>ディスク上に実際の秘密情報が残っている</h4><span class="badge rank-must">必須</span></div>
-        <p class="gap-now"><code>prototype/.env</code>と<code>prototype/.demo-access.txt</code>に、過去のデモで使った本物のGemini APIキーとアクセスコードがそのまま残っている。</p>
-        <p class="gap-fix"><b>直すなら:</b> 両方のキー・コードをすぐにローテーションし、以後は秘密情報をチャットやスクリーンショットに貼らないルールを徹底する。</p>
+        <div class="card-head"><h4>興味タグでの検索・その場での物語づくり</h4></div>
+        <p class="gap-now">今のReaderは公開済みの本を新しい順に並べるだけで、興味タグでの検索や、その場でアイデアを入力して新しい物語を生成する機能はまだありません。</p>
+        <p class="gap-fix"><b>広げるなら:</b> 本棚に本がある程度たまってきたタイミングで、まずはタグ検索から着手するのが現実的です。</p>
       </div>
       <div class="card gap-card">
-        <div class="card-head"><h4>SETUP-GUIDE.mdにCreatorのデプロイ手順がまるごと無い</h4><span class="badge rank-must">必須</span></div>
-        <p class="gap-now">SETUP-GUIDE.mdはMaker（Part 2-5）とReader（Part 6-9）のデプロイしか説明しておらず、Creator本体の作成・スクリプトプロパティ設定・デプロイ手順が書かれていない。末尾の「この確認後に実装するもの」も、すでに実装済みのCreatorの直接公開機能を「未実装」として書いている。</p>
-        <p class="gap-fix"><b>直すなら:</b> 本書06章の内容をベースに、SETUP-GUIDE.mdへCreatorのPartを追加し、末尾のTODOリストを現状に合わせて書き換える。</p>
-      </div>
-      <div class="card gap-card">
-        <div class="card-head"><h4>下書き保存機能の有無が未確認</h4><span class="badge rank-important">重要</span></div>
-        <p class="gap-now">Code.gsに「Save draft」に相当する関数が見当たらない。公開前に画面を閉じたり再読み込みしたりした場合の挙動が未確認。</p>
-        <p class="gap-fix"><b>直すなら:</b> 実機で再読み込み時の挙動を確認し、必要なら会話・物語・ページ割りの自動保存を追加する。</p>
-      </div>
-      <div class="card gap-card">
-        <div class="card-head"><h4>Readerの興味タグ検索・その場での新規生成が未実装</h4><span class="badge rank-later">検討</span></div>
-        <p class="gap-now">当初の構想（<code>docs/concept.html</code>）にあった、興味タグで本を探す機能と、その場でアイデアを入力して新しい物語を生成する「Read Mode B」は実装されていない。</p>
-        <p class="gap-fix"><b>直すなら:</b> 本棚が育ってきたタイミングで、タグ検索から着手するのが現実的。その場生成は追加のGemini呼び出し・安全確認の設計から必要。</p>
-      </div>
-      <div class="card gap-card">
-        <div class="card-head"><h4>挿絵の自動生成・自動QAパイプラインが未実装</h4><span class="badge rank-later">検討</span></div>
-        <p class="gap-now"><code>docs/illustration-pipeline.md</code>が描く「参照シート生成→自動QA採点→先生のコンタクトシート確認」は構想のみで、現状は先生がプロンプトをコピーしてWorkspaceのGeminiアプリを手動操作する運用になっている。</p>
-        <p class="gap-fix"><b>直すなら:</b> まずは今の手動運用のまま台数をこなして知見をためる。自動化はコストとレイテンシの検証（illustration-pipeline.mdの「MVP検証」節）から。</p>
+        <div class="card-head"><h4>挿絵の自動生成</h4></div>
+        <p class="gap-now">現状は先生がプロンプトをコピーしてGoogle WorkspaceのGeminiアプリを手動操作し、挿絵を1枚ずつダウンロード・アップロードする運用です（<a href="#howto-creator">03章</a>参照）。</p>
+        <p class="gap-fix"><b>広げるなら:</b> まずは今の手動運用で知見をためながら、自動生成・自動チェックへの移行を検討します。</p>
       </div>
     </div>
   </section>
