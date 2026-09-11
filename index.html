@@ -1,0 +1,582 @@
+<title>PictureBook Creation System - Story Bridge</title>
+<style>
+  :root {
+    --bg: #F7F2E7;
+    --surface: #FFFFFF;
+    --surface-2: #F1E9D8;
+    --ink: #17303D;
+    --ink-soft: #4C6672;
+    --ink-faint: #7E8F96;
+    --line: #E3D9C4;
+    --line-strong: #D3C6A8;
+    --brand: #1F7A63;
+    --brand-soft: #DCEEE7;
+    --amber: #C97C14;
+    --amber-soft: #FBEBD2;
+    --flag: #A13A55;
+    --flag-soft: #F5DDE3;
+    --status-done-ink: #1F6B4B;
+    --status-done-bg: #DCEEE2;
+    --status-todo-ink: #A8461C;
+    --status-todo-bg: #F7E3D6;
+    --status-later-ink: #6B5E45;
+    --status-later-bg: #EDE6D4;
+    --focus-ring: #2F6FB0;
+    --shadow: 0 1px 2px rgba(23,48,61,0.07), 0 8px 24px -12px rgba(23,48,61,0.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1B21;
+      --surface: #16262C;
+      --surface-2: #1B2B30;
+      --ink: #EDE6D9;
+      --ink-soft: #AEC0C4;
+      --ink-faint: #7E8F96;
+      --line: #24363B;
+      --line-strong: #2E434A;
+      --brand: #4FAE9B;
+      --brand-soft: #163530;
+      --amber: #E8A53E;
+      --amber-soft: #3A2E17;
+      --flag: #E17A94;
+      --flag-soft: #3A1F28;
+      --status-done-ink: #7FD3AC;
+      --status-done-bg: #1C3229;
+      --status-todo-ink: #F0A374;
+      --status-todo-bg: #3A2419;
+      --status-later-ink: #C9BD9E;
+      --status-later-bg: #2A251B;
+      --focus-ring: #6AA9E0;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1B21;
+    --surface: #16262C;
+    --surface-2: #1B2B30;
+    --ink: #EDE6D9;
+    --ink-soft: #AEC0C4;
+    --ink-faint: #7E8F96;
+    --line: #24363B;
+    --line-strong: #2E434A;
+    --brand: #4FAE9B;
+    --brand-soft: #163530;
+    --amber: #E8A53E;
+    --amber-soft: #3A2E17;
+    --flag: #E17A94;
+    --flag-soft: #3A1F28;
+    --status-done-ink: #7FD3AC;
+    --status-done-bg: #1C3229;
+    --status-todo-ink: #F0A374;
+    --status-todo-bg: #3A2419;
+    --status-later-ink: #C9BD9E;
+    --status-later-bg: #2A251B;
+    --focus-ring: #6AA9E0;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Karla', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    line-height: 1.75;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .disp { font-family: 'Fraunces', 'Hiragino Mincho ProN', serif; text-wrap: balance; }
+  code, .mono, .fact-value, .term-def code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  a { color: var(--brand); }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 2.5px solid var(--focus-ring); outline-offset: 2px; border-radius: 3px; }
+
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 20px 110px; }
+
+  /* topbar */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner { max-width: 780px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: baseline; gap: 14px; }
+  .brand { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.1rem; white-space: nowrap; color: var(--ink); }
+  .brand em { color: var(--brand); font-style: normal; }
+  .nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a {
+    flex: none; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.02em;
+    color: var(--ink-soft); text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 11px; background: var(--surface);
+  }
+  .nav a:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+  /* hero */
+  .hero { padding: 44px 0 30px; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--brand); margin: 0 0 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--brand); display: inline-block; }
+  h1.title { font-size: clamp(2rem, 6.5vw, 2.8rem); line-height: 1.08; margin: 0 0 14px; font-weight: 600; }
+  .lede { font-size: 1.06rem; color: var(--ink-soft); max-width: 62ch; margin: 0; }
+  .hero-meta { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill { font-family: 'JetBrains Mono', monospace; font-size: 0.71rem; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; color: var(--ink-soft); background: var(--surface); }
+
+  /* sections */
+  section { padding: 46px 0; border-top: 1px solid var(--line); scroll-margin-top: 20px; }
+  section:first-of-type { border-top: none; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+  .sec-num { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem; color: var(--brand); letter-spacing: 0.03em; }
+  h2 { font-size: clamp(1.4rem, 4.6vw, 1.75rem); margin: 0; font-weight: 600; }
+  .sec-sub { color: var(--ink-soft); font-size: 0.96rem; margin: 10px 0 22px; max-width: 62ch; }
+  p { max-width: 66ch; }
+  h3 { font-size: 1.1rem; margin: 26px 0 10px; font-weight: 600; font-family: 'Fraunces', serif; }
+  strong { color: var(--ink); }
+
+  /* facts grid */
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 20px 0; box-shadow: var(--shadow); }
+  .fact { background: var(--surface); padding: 13px 16px; }
+  .fact-label { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 4px; }
+  .fact-value { font-size: 0.9rem; word-break: break-word; color: var(--ink); }
+  @media (max-width: 520px) { .facts { grid-template-columns: 1fr 1fr; } }
+
+  /* glossary term tooltip */
+  button.term { all: unset; cursor: pointer; position: relative; font: inherit; color: var(--ink); border-bottom: 2px dotted var(--amber); padding-bottom: 1px; }
+  button.term:hover, button.term:focus-visible { color: var(--brand); }
+  .tip {
+    display: none; position: absolute; z-index: 30; left: 50%; top: 100%; transform: translate(-50%, 8px);
+    width: max(220px, min(78vw, 320px)); background: var(--ink); color: var(--bg);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; line-height: 1.55; padding: 10px 12px; border-radius: 8px;
+    box-shadow: var(--shadow); text-align: left; white-space: normal;
+  }
+  .tip::before { content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-bottom-color: var(--ink); }
+  button.term:hover .tip, button.term:focus-visible .tip, button.term.open .tip { display: block; }
+
+  /* step flow */
+  ol.flow { counter-reset: step; list-style: none; padding: 0; margin: 22px 0; border-left: 2px solid var(--line-strong); }
+  ol.flow li { position: relative; padding: 2px 0 26px 30px; counter-increment: step; }
+  ol.flow li::before {
+    content: counter(step); position: absolute; left: -14px; top: -1px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--brand); color: var(--brand); font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+  }
+  ol.flow.reader li::before { border-color: var(--amber); color: var(--amber); }
+  ol.flow strong.step-title { display: block; font-size: 1rem; margin-bottom: 4px; color: var(--ink); }
+  ol.flow span.step-d { font-size: 0.92rem; color: var(--ink-soft); }
+  ol.flow span.step-tag {
+    display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; letter-spacing: 0.03em;
+    padding: 2px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-faint); margin-left: 8px; vertical-align: middle;
+  }
+
+  /* diagram */
+  figure.diagram { margin: 26px 0 8px; }
+  .diagram-scroll { overflow-x: auto; border-radius: 10px; }
+  .diagram svg { width: 100%; height: auto; display: block; min-width: 300px; }
+  .node rect { fill: var(--surface-2); stroke: var(--ink-faint); stroke-width: 1.4; }
+  .node text { fill: var(--ink); }
+  .node.brand-node rect { fill: var(--brand-soft); stroke: var(--brand); }
+  .node.brand-node text { fill: var(--status-done-ink); }
+  .node.outside rect { fill: var(--amber-soft); stroke: var(--amber); stroke-dasharray: 5 4; }
+  .node.outside text { fill: var(--status-todo-ink); }
+  .node.store rect { fill: var(--surface); stroke: var(--ink-faint); stroke-width: 1.6; }
+  .diagram .flow-line { stroke: var(--ink-faint); stroke-width: 1.6; fill: none; }
+  .diagram .branch-label { fill: var(--ink-faint); font-size: 11px; }
+  figcaption { font-size: 0.85rem; color: var(--ink-soft); margin-top: 10px; max-width: 62ch; }
+
+  /* cards / roadmap */
+  .stack { display: grid; gap: 12px; margin: 20px 0; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .card-head h4 { margin: 0; font-size: 1rem; font-weight: 600; font-family: 'Fraunces', serif; }
+  .badge { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .badge.rank-must { background: var(--flag); color: #fff; }
+  .badge.rank-important { background: var(--status-todo-bg); color: var(--status-todo-ink); }
+  .badge.rank-later { background: var(--status-later-bg); color: var(--status-later-ink); }
+  .gap-card .gap-now { margin: 8px 0 0; color: var(--ink-soft); font-size: 0.93rem; max-width: none; }
+  .gap-card .gap-fix { margin: 10px 0 0; padding: 10px 12px; background: var(--surface-2); border-radius: 8px; font-size: 0.93rem; color: var(--ink); max-width: none; }
+  .gap-card .gap-fix b { color: var(--flag); }
+  .rank-legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 22px; }
+  .rank-legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--ink-soft); }
+  .rank-legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  /* notice */
+  .notice { border-left: 4px solid var(--flag); background: var(--flag-soft); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 20px 0; font-size: 0.91rem; color: var(--ink); max-width: none; }
+  .notice p { margin: 0; max-width: none; }
+  .notice p + p { margin-top: 8px; }
+  .notice-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--flag); display: block; margin-bottom: 6px; }
+  .notice.info { border-left-color: var(--brand); background: var(--brand-soft); }
+  .notice.info .notice-label { color: var(--status-done-ink); }
+  .notice.quiet { border-left-color: var(--ink-faint); background: var(--surface-2); }
+  .notice.quiet .notice-label { color: var(--ink-faint); }
+
+  /* accordion */
+  details.accordion { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin: 20px 0; box-shadow: var(--shadow); overflow: hidden; }
+  details.accordion summary {
+    cursor: pointer; list-style: none; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    font-weight: 600; font-size: 0.98rem; color: var(--ink);
+  }
+  details.accordion summary::-webkit-details-marker { display: none; }
+  details.accordion summary .chev { font-family: 'JetBrains Mono', monospace; color: var(--brand); transition: transform 0.15s ease; flex: none; }
+  details.accordion[open] summary .chev { transform: rotate(90deg); }
+  details.accordion summary .sum-sub { font-weight: 400; font-size: 0.82rem; color: var(--ink-faint); display: block; margin-top: 3px; }
+  details.accordion .accordion-body { padding: 4px 20px 22px; border-top: 1px solid var(--line); }
+  details.accordion ol.flow { margin-top: 18px; }
+
+  /* to-line */
+  .to-line { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+
+  /* glossary reference table */
+  .gloss { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 18px; }
+  .gloss-row { background: var(--surface); padding: 12px 16px; display: grid; grid-template-columns: minmax(120px,190px) 1fr; gap: 14px; }
+  .gloss-term { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.83rem; color: var(--brand); }
+  .gloss-def { color: var(--ink-soft); font-size: 0.89rem; }
+  @media (max-width: 560px) { .gloss-row { grid-template-columns: 1fr; gap: 3px; } }
+
+  footer { border-top: 1px solid var(--line); padding: 30px 0 10px; color: var(--ink-faint); font-size: 0.84rem; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section { animation: rise 0.4s ease-out both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Story <em>Bridge</em></div>
+    <nav class="nav" aria-label="セクション">
+      <a href="#purpose">01 目的</a>
+      <a href="#system">02 全体の仕組み</a>
+      <a href="#howto-creator">03 Creatorの使い方</a>
+      <a href="#howto-reader">04 Readerの使い方</a>
+      <a href="#security">05 アクセス管理</a>
+      <a href="#gemini-key">06 Gemini APIキー</a>
+      <a href="#roadmap">07 足りないところ</a>
+      <a href="#glossary">用語集</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <p class="eyebrow">PictureBook Creation System</p>
+    <h1 class="title">Story Bridge マニュアル</h1>
+    <p class="to-line">対象読者: Story Bridgeを学校で試す先生・引き継ぎを受ける管理担当者 ／ 本書作成: 2026-09-11</p>
+    <p class="lede">Story Bridgeは、4〜8歳の子どもが先生と一緒にGeminiと対話しながら、自分だけの絵本（ピクチャーブック）を作れる仕組みです。子どものアイデアを起点に物語が生まれ、完成した本は学校内の本棚（Reader）にたまっていきます。</p>
+    <div class="hero-meta">
+      <span class="pill">対象: 4-8歳 + 先生同席</span>
+      <span class="pill">言語: 英語のみ</span>
+      <span class="pill">AI: Gemini Developer API</span>
+      <span class="pill">現行アプリ: Google Apps Script版</span>
+    </div>
+    <div class="notice" style="margin-top:24px;">
+      <span class="notice-label">先に伝えておきたいこと</span>
+      <p>Story Bridgeの中心は、以前まとめられていた<code>docs/story-bridge-manual.md</code>が説明していたNode.js版（<code>prototype/</code>）から、<strong>Google Apps Script版（Creator・Reader・Maker の3アプリ）</strong>へすでに移行しています。旧マニュアルはprototypeしか説明しておらず、今の仕組みとはズレがあったため、コードを直接読み直して本書を作り直しました。</p>
+      <p>Node.js版は「Apps Script版が実機テストに合格するまでの保険」として<code>prototype/</code>フォルダにまだ残っていますが、日常運用で触るのはApps Script版の2つのURL（Creator・Reader）だけです。</p>
+      <p>また、<strong>現在CreatorのGemini APIキーはあなた個人が発行したものが入っています。</strong>学校の正式運用に移す前に学校管理のキーへ差し替える必要があります（<a href="#gemini-key">06章</a>参照）。</p>
+    </div>
+  </div>
+
+  <section id="purpose">
+    <div class="sec-head"><span class="sec-num">01</span><h2>目的</h2></div>
+    <p class="sec-sub">何のために、誰のために作っているか</p>
+
+    <p>Story Bridgeの目的は読書の代替ではありません。本に強い興味を持てていない子どもに、<strong>AIとの対話を通じて「物語を作る」体験</strong>をひとつ挟むことで、できあがった自分の本や友だちの本を「読んでみたい」と思うきっかけを作ることです。子どもは先生の隣でGeminiと話しながらアイデアを膨らませ、先生はその発言を確認しながらファシリテートします。</p>
+
+    <div class="facts">
+      <div class="fact"><p class="fact-label">対象年齢</p><p class="fact-value">4〜8歳（先生が必ず同席）</p></div>
+      <div class="fact"><p class="fact-label">対応言語</p><p class="fact-value">英語のみ</p></div>
+      <div class="fact"><p class="fact-label">使用AI</p><p class="fact-value"><button class="term" type="button">Gemini Developer API<span class="tip">Story Bridgeが呼び出しているGoogleの生成AI API。学校のGoogle Workspaceに標準で入っているGeminiアプリ（チャット画面）とは別サービスで、利用枠も別に管理される。</span></button>（既定モデルは<button class="term" type="button">gemini-3.6-flash<span class="tip">Creatorが最初に呼び出すモデル名。応答に失敗した場合はgemini-3.1-flash-liteに自動で切り替わる。</span></button>）</p></div>
+      <div class="fact"><p class="fact-label">端末</p><p class="fact-value">Chromebookなどブラウザが動く端末（カメラ・マイク任意）</p></div>
+      <div class="fact"><p class="fact-label">現在の中心アプリ</p><p class="fact-value">Google Apps Script版：Creator / Reader（セットアップ専用だったMakerは役目を終えて取り壊し済み）</p></div>
+      <div class="fact"><p class="fact-label">データ保存先</p><p class="fact-value">サーバーDBなし。学校の<button class="term" type="button">共有ドライブ<span class="tip">個人ではなく組織（学校）が所有するGoogle Driveの領域。担当者が異動しても中身が残る。</span></button> + <button class="term" type="button">Story Bridge Library Data<span class="tip">Books・Pages・Contributorsの3シートを持つGoogleスプレッドシート。セットアップ時にMakerが自動作成した。</span></button>スプレッドシート</p></div>
+    </div>
+  </section>
+
+  <section id="system">
+    <div class="sec-head"><span class="sec-num">02</span><h2>全体の仕組み（3つのアプリ）</h2></div>
+    <p class="sec-sub">誰が・どのURLで・何をするか</p>
+
+    <p>Story Bridgeは1つの大きなアプリではなく、役割の異なる<button class="term" type="button">Apps Script Webアプリ<span class="tip">Googleのサーバー上でJavaScript（Apps Script）を実行し、ブラウザからアクセスできる画面として公開する仕組み。サーバーを自分で借りたり管理したりする必要がない。</span></button>でできています。日常的に開くのは<strong>Creator</strong>と<strong>Reader</strong>の2つだけです。</p>
+
+    <div class="facts" style="grid-template-columns: 1fr;">
+      <div class="fact">
+        <p class="fact-label">Creator（先生+子ども用・毎回使う）</p>
+        <p class="fact-value">子どもとGeminiの対話をファシリテートし、物語・ページ割り・挿絵をまとめて「学校の本棚」へ公開するアプリ。<code>google-workspace/creator-app/</code></p>
+      </div>
+      <div class="fact">
+        <p class="fact-label">Reader（子ども用・毎回使う）</p>
+        <p class="fact-value">公開済みの本だけを読める、読み取り専用の本棚アプリ。保存・編集・削除・Gemini呼び出しの機能は一切持たない。<code>google-workspace/reader/</code></p>
+      </div>
+      <div class="fact">
+        <p class="fact-label">Maker（管理者用・初回セットアップのみ）</p>
+        <p class="fact-value">共有ドライブのフォルダとStory Bridge Library Dataスプレッドシートを自動で作る、初回セットアップ専用ツール。セットアップが終われば役目を終える一度きりの道具で、このプロジェクトでは<strong>セットアップ完了後にすでに取り壊し済み</strong>。<code>google-workspace/maker/</code>にコードは残る。</p>
+      </div>
+    </div>
+
+    <div class="notice quiet">
+      <span class="notice-label">MakerはCreatorへ直接つながっていなかった</span>
+      <p>Makerには「Creatorとの接続トークンを作る」というステップがありましたが、これは旧Node.jsプロトタイプがMakerへHTTPで本を送信していた頃の設計です。Creator（Apps Script版）は自分自身のスクリプトプロパティ（<code>SB_SPREADSHEET_ID</code>・<code>SB_PUBLISHED_FOLDER_ID</code>）を使ってスプレッドシートとドライブに直接書き込むため、このトークンは使われないまま取り壊されました。</p>
+    </div>
+
+    <h3>本が公開されるまでの流れ</h3>
+    <figure class="diagram">
+      <div class="diagram-scroll">
+        <svg viewBox="0 0 640 640" role="img" aria-label="Creatorでの対話から物語の確定、ページ割りの承認、Story Bridgeの外側でのGemini手作業による挿絵づくり、アップロードと公開、スプレッドシートとドライブへの保存、Readerでの公開済みの本だけの表示までの流れを示す図">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"></path>
+            </marker>
+          </defs>
+          <g class="node brand-node">
+            <rect x="140" y="14" width="360" height="52" rx="10"></rect>
+            <text x="320" y="35" text-anchor="middle" font-size="13" font-weight="600">先生+子ども ×  Gemini の対話</text>
+            <text x="320" y="52" text-anchor="middle" font-size="12">Creator 「はじめ方を選ぶ」〜チャット</text>
+          </g>
+          <path class="flow-line" d="M320,66 L320,90" marker-end="url(#arrow)"></path>
+          <g class="node">
+            <rect x="140" y="92" width="360" height="52" rx="10"></rect>
+            <text x="320" y="113" text-anchor="middle" font-size="13" font-weight="600">「Make our story」で物語を確定</text>
+            <text x="320" y="130" text-anchor="middle" font-size="12">タイトル + 本文（150〜350語）</text>
+          </g>
+          <path class="flow-line" d="M320,144 L320,168" marker-end="url(#arrow)"></path>
+          <g class="node">
+            <rect x="140" y="170" width="360" height="52" rx="10"></rect>
+            <text x="320" y="191" text-anchor="middle" font-size="13" font-weight="600">ページ割りを作成・先生が承認</text>
+            <text x="320" y="208" text-anchor="middle" font-size="12">12〜16ページ、各ページに挿絵の説明文</text>
+          </g>
+          <path class="flow-line" d="M320,222 L320,246" marker-end="url(#arrow)"></path>
+          <g class="node outside">
+            <rect x="110" y="248" width="420" height="66" rx="10"></rect>
+            <text x="320" y="270" text-anchor="middle" font-size="13" font-weight="600">挿絵を作る（Story Bridgeの外）</text>
+            <text x="320" y="288" text-anchor="middle" font-size="12">先生がプロンプトをコピーし、Workspaceの</text>
+            <text x="320" y="303" text-anchor="middle" font-size="12">Geminiアプリで1枚ずつ生成・ダウンロード</text>
+          </g>
+          <path class="flow-line" d="M320,314 L320,338" marker-end="url(#arrow)"></path>
+          <g class="node">
+            <rect x="140" y="340" width="360" height="52" rx="10"></rect>
+            <text x="320" y="361" text-anchor="middle" font-size="13" font-weight="600">挿絵をCreatorへアップロードして公開</text>
+            <text x="320" y="378" text-anchor="middle" font-size="12">貢献者名・クラスを入力し確認チェック</text>
+          </g>
+          <path class="flow-line" d="M320,392 L320,416" marker-end="url(#arrow)"></path>
+          <g class="node store">
+            <rect x="90" y="418" width="460" height="60" rx="10"></rect>
+            <text x="320" y="440" text-anchor="middle" font-size="13" font-weight="600">Story Bridge Library Data（スプレッドシート）</text>
+            <text x="320" y="458" text-anchor="middle" font-size="12">Books・Pages・Contributors + 公開フォルダの画像</text>
+          </g>
+          <path class="flow-line" d="M320,478 L320,502" marker-end="url(#arrow)"></path>
+          <g class="node brand-node">
+            <rect x="140" y="504" width="360" height="52" rx="10"></rect>
+            <text x="320" y="525" text-anchor="middle" font-size="13" font-weight="600">Reader が本棚に表示</text>
+            <text x="320" y="542" text-anchor="middle" font-size="12">status が「Published」の本だけ</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>図: 対話→物語確定→ページ割り承認のあと、挿絵づくりだけはStory Bridgeの外（先生が手動でGeminiアプリを操作）で行われ、アップロード後にスプレッドシートとドライブへ保存され、Readerはそのうち公開済みの本だけを表示する。</figcaption>
+    </figure>
+  </section>
+
+  <section id="howto-creator">
+    <div class="sec-head"><span class="sec-num">03</span><h2>使い方 — Creator（先生+子ども編）</h2></div>
+    <p class="sec-sub">1冊の本ができるまで、先生と子どもが画面で何をするか</p>
+
+    <ol class="flow">
+      <li><strong class="step-title">はじめ方を選ぶ</strong><span class="step-d">「💡 I have an idea（アイデアがある）」か「🧭 Help me imagine（想像を手伝って）」のどちらかを選ぶ。前者は自由入力（free）、後者はBuddyが遊び心のある質問で導くガイド型（guided）のモードになる。</span></li>
+      <li><strong class="step-title">Buddyと対話する</strong><span class="step-d">子どもがテキストか🎙️マイクで話す。音声はいったん文字起こしされてテキスト欄に入るだけで、<strong>自動送信はされない</strong>。先生が内容を確認してから Send を押す設計。guidedモードでは短い選択肢が最大3つ表示されることがある。</span></li>
+      <li><strong class="step-title">「Make our story」が使えるようになる</strong><span class="step-d">はじまり・変化・行動・終わりの感情がひととおり揃うと内部の<button class="term" type="button">readyToWrite<span class="tip">Geminiが会話の中で返す値のひとつ。物語を書き始めるのに十分な材料（はじまり・変化・行動・終わりの感情）が揃ったと判断するとtrueになり、「Make our story」が押せるようになる。</span></button>がtrueになり、Buddyが「Teacher, please press Make our story.」と伝えてボタンが押せるようになる。</span></li>
+      <li><strong class="step-title">絵の雰囲気（<button class="term" type="button">Picture feeling<span class="tip">挿絵の雰囲気を選ぶ項目。Cute・Cool・Funny・Magical・Cozy・Colorfulの6種類、または自由入力から選ぶ。</span></button>）を選ぶ</strong><span class="step-d">Cute・Cool・Funny・Magical・Cozy・Colorfulの6種類、または自由入力から選ぶ。</span></li>
+      <li><strong class="step-title">物語が確定する</strong><span class="step-d">タイトルと本文が表示される。「Copy story」「Print / Save PDF」「Plan the picture book →」から次へ進む。</span></li>
+      <li><strong class="step-title">ページ割りを確認・承認する</strong><span class="step-d">Geminiが物語を12〜16ページに分割し、各ページの本文と挿絵の説明文を提案する。先生はテキストを編集したりページの順番を入れ替えたりできる。「子どもの発言に由来するアイデア」も一覧表示される。「✓ Approve story plan」で確定。</span></li>
+      <li><strong class="step-title">挿絵スタジオで挿絵を用意する</strong><span class="step-tag">Story Bridgeの外での作業</span><span class="step-d">Creatorは挿絵を自動生成しません。①キャラクター参照シート用のプロンプトをコピーし、Google WorkspaceのGeminiアプリ（Story Bridgeとは別画面）に貼って画像を作り、ダウンロードしてアップロードで戻す。②全ページ分の長いプロンプトを同じGeminiの会話に貼り、「Next」と送るたびに1ページずつ画像をもらってダウンロード。③できた画像をページ番号ごとにアップロードする。1ページだけ気に入らない場合は「Fix this page」で個別にやり直せる。</span></li>
+      <li><strong class="step-title">貢献者情報を入力して公開する</strong><span class="step-d">「Student or group name」「Class」を入力し、「I confirm that the teacher has checked this book and its contributor information」にチェックを入れると「Publish to school library」が押せる。押すとサーバー側の<button class="term" type="button">publishBook<span class="tip">Creatorが本を確定して公開するときに呼び出すサーバー側の関数名。スプレッドシートへの行追加とドライブへの画像保存をまとめて行う。</span></button>が本をスプレッドシートとドライブに保存し、Readerの本棚に並ぶ。</span></li>
+    </ol>
+
+    <div class="notice">
+      <span class="notice-label">下書き保存はない（要確認）</span>
+      <p>現在のCode.gsには「Save draft（下書き保存）」に相当する関数が見当たりません。公開前にタブを閉じたり再読み込みしたりした場合に会話・物語・挿絵が失われるかどうかは、実機での確認を推奨します（<a href="#roadmap">07章</a>参照）。</p>
+    </div>
+  </section>
+
+  <section id="howto-reader">
+    <div class="sec-head"><span class="sec-num">04</span><h2>使い方 — Reader（子ども編）</h2></div>
+    <p class="sec-sub">できあがった本をどう読むか</p>
+
+    <ol class="flow reader">
+      <li><strong class="step-title">本棚を開く</strong><span class="step-d">「🌉 Story Bridge Library」の見出しの下に、公開済みの本が表紙・タイトル・「Created by 名前・クラス」付きで新しい順に並ぶ。</span></li>
+      <li><strong class="step-title">本を選ぶ</strong><span class="step-d">表紙のボタンを押すと、その本のページが読み込まれる。</span></li>
+      <li><strong class="step-title">1ページずつ読む</strong><span class="step-d">← Previous / Next → の矢印（キーボードの矢印キーにも対応）でページ送り。🔊 Read を押すとブラウザの読み上げ（英語）でページの文章を読み上げる。</span></li>
+      <li><strong class="step-title">最後のページで本棚に戻る</strong><span class="step-d">最終ページではNext →ボタンが「Library →」に変わり、押すと本棚に戻る。</span></li>
+    </ol>
+
+    <div class="notice quiet">
+      <span class="notice-label">興味タグ検索・その場での新規生成は未実装</span>
+      <p>初期の構想（<code>docs/concept.html</code>）では、Readerに「興味タグで本を探す」機能と「その場でアイデアを入力して新しい物語をその場で生成する」機能の2つが計画されていました。現在のReaderにはどちらもなく、<strong>公開済みの本を新しい順に並べて見せるだけ</strong>の、検索・フィルターなしのシンプルな本棚です。ログイン画面もなく、先生・貢献者情報の編集機能も一切ありません。</p>
+    </div>
+  </section>
+
+  <section id="security">
+    <div class="sec-head"><span class="sec-num">05</span><h2>アクセス管理</h2></div>
+    <p class="sec-sub">誰がどこまで開けるか、旧プロトタイプとの違い</p>
+
+    <p>Creator・Reader・Makerのどのアプリにも、パスワードやアクセスコードを入力する専用画面は<strong>ありません</strong>。アクセス制御は、Google Apps Scriptを<button class="term" type="button">Webアプリとしてデプロイ<span class="tip">Apps Scriptエディタ右上の「デプロイ」→「新しいデプロイ」から行う操作。ここで「実行ユーザー」と「アクセスできるユーザー」を選ぶことで、誰がそのURLを開けるかが決まる。</span></button>する際の「実行ユーザー」「アクセスできるユーザー」の設定だけに依存しています。</p>
+
+    <div class="facts" style="grid-template-columns: 1fr;">
+      <div class="fact">
+        <p class="fact-label">Creator</p>
+        <p class="fact-value">推奨: 実行ユーザーは各先生自身、アクセスできるユーザーは学校のGoogle Workspace組織内に限定。旧Node.jsプロトタイプにあった<code>STORY_BRIDGE_ACCESS_CODE</code>のようなアクセスコード画面は、Apps Script版には存在しません。</p>
+      </div>
+      <div class="fact">
+        <p class="fact-label">Reader</p>
+        <p class="fact-value">推奨: 実行ユーザーは管理者（デプロイした本人）、アクセスできるユーザーは学校組織内に限定。児童は自分のGoogleアカウントでログインする必要はなく、URLを開くだけで読める。</p>
+      </div>
+      <div class="fact">
+        <p class="fact-label">Maker</p>
+        <p class="fact-value">最初にログインしてMakerを開いたGoogleアカウントが、そのまま唯一の管理者として固定される仕様（<code>requireAdmin_()</code>）。別のアカウントで開くとエラーになる。SETUP-GUIDE.mdにはこの説明がないため、最初に開くアカウントを間違えないよう注意。</p>
+      </div>
+    </div>
+
+    <div class="notice">
+      <span class="notice-label">ディスク上に残っている実際の秘密情報</span>
+      <p><code>prototype/.env</code>と<code>prototype/.demo-access.txt</code>には、過去の先生向けデモで使ったとみられる実際のGemini APIキーとアクセスコードがそのまま残っています。どちらも<code>.gitignore</code>によってGitへのコミット対象からは外れていますが、ディスク上には存在したままです。使い回さず、ローテーション（無効化して新しいキーに差し替え）することをおすすめします。</p>
+    </div>
+  </section>
+
+  <section id="gemini-key">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Gemini APIキーの管理</h2></div>
+    <p class="sec-sub">今入っているキーは個人のもの。学校運用に移す前に差し替える</p>
+
+    <p>Gemini呼び出しを行うのはCreatorだけです。ReaderとMakerはGemini APIを一切呼び出さないため、キーの設定は不要です。CreatorはAPIキーをブラウザへは送らず、<button class="term" type="button">スクリプトプロパティ<span class="tip">Apps Scriptプロジェクトごとにサーバー側だけで保持される設定値の保存場所。PropertiesServiceというAPIから読み書きする。値はブラウザのJavaScriptには渡らない。</span></button>に保存した値を、サーバー側の<button class="term" type="button">UrlFetchApp<span class="tip">Apps ScriptからGeminiのような外部APIをサーバー側で呼び出すための命令。ブラウザを経由しないため、APIキーが外に漏れにくい。</span></button>（<code>UrlFetchApp.fetch</code>）からGeminiへ直接送っています。</p>
+
+    <div class="facts" style="grid-template-columns: 1fr;">
+      <div class="fact"><p class="fact-label">GEMINI_API_KEY</p><p class="fact-value">必須。未設定だとGeminiを呼ばずに固定の練習用応答を返す「デモモード」で動く（画面右上のピルが「Free demo」と表示される）。</p></div>
+      <div class="fact"><p class="fact-label">GEMINI_MODEL</p><p class="fact-value">任意。既定は<code>gemini-3.6-flash</code>（失敗時は<code>gemini-3.1-flash-lite</code>に自動フォールバック）。通常は設定しなくてよい。</p></div>
+      <div class="fact"><p class="fact-label">SB_SPREADSHEET_ID / SB_PUBLISHED_FOLDER_ID</p><p class="fact-value">Gemini用ではないが同じスクリプトプロパティ画面にある。Makerが表示する値をコピーして設定する（Part 3・Part 4相当）。未設定だと公開機能が使えない。</p></div>
+    </div>
+
+    <p>画面右上の接続ピルで、今どのキーが効いているかがひと目で分かります。</p>
+    <div class="facts" style="grid-template-columns: 1fr;">
+      <div class="fact"><p class="fact-label">Gemini connected / Gemini configured</p><p class="fact-value">GEMINI_API_KEYが有効で、Geminiに正常につながっている状態。</p></div>
+      <div class="fact"><p class="fact-label">Free demo</p><p class="fact-value">GEMINI_API_KEYが未設定。練習用の固定応答のみで動く。</p></div>
+      <div class="fact"><p class="fact-label">Gemini error / Offline</p><p class="fact-value">キーは設定されているが呼び出しに失敗、または接続確認自体ができなかった状態。</p></div>
+    </div>
+
+    <details class="accordion">
+      <summary>
+        <span>Gemini APIキーを差し替える手順を見る<span class="sum-sub">個人のキーから学校用のキーへ切り替えるとき・キーが流出したときに使う</span></span>
+        <span class="chev">▸</span>
+      </summary>
+      <div class="accordion-body">
+        <ol class="flow">
+          <li><strong class="step-title">新しいAPIキーを発行する</strong><span class="step-d">学校のGoogleアカウント（できれば学校専用のGoogle Cloudプロジェクト）で<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio の API Keys</a>を開き、「Create API key」で新しいキーを作る。</span></li>
+          <li><strong class="step-title">Creatorプロジェクトを開く</strong><span class="step-d"><a href="https://script.google.com/" target="_blank" rel="noopener">script.google.com</a>を開き、Story Bridge Creatorのプロジェクトを選ぶ。</span></li>
+          <li><strong class="step-title">プロジェクトの設定を開く</strong><span class="step-d">左側メニューの歯車アイコン「プロジェクトの設定」を押す。</span></li>
+          <li><strong class="step-title">スクリプト プロパティを編集する</strong><span class="step-d">ページ下部の「スクリプト プロパティ」欄で<code>GEMINI_API_KEY</code>の行を探し、鉛筆アイコンから値を新しいキーに書き換えて保存する。行が無ければ「スクリプト プロパティを追加」から新規作成する。</span></li>
+          <li><strong class="step-title">古いキーを無効化する</strong><span class="step-d">Google AI Studioに戻り、置き換え前の古いキーを削除（無効化）する。漏れたキーを放置しない。</span></li>
+          <li><strong class="step-title">動作を確認する</strong><span class="step-d">CreatorのURLを開き直し、右上のピルが「Gemini connected」または「Gemini configured」になっていることを確認する。「Free demo」のままなら保存し忘れやキーの貼り付けミスを疑う。</span></li>
+        </ol>
+        <div class="notice quiet" style="margin-top:4px;">
+          <span class="notice-label">再デプロイは不要</span>
+          <p>スクリプトプロパティの変更は、Webアプリを新しくデプロイし直さなくても次回の実行からすぐに反映されます（Node.js版で環境変数を変えるたびに必要だった再デプロイは不要）。</p>
+        </div>
+      </div>
+    </details>
+
+    <div class="notice">
+      <span class="notice-label">やってはいけないこと</span>
+      <p>APIキーをソースコード・Git・チャット・スクリーンショットには絶対に貼らないでください。誤って貼ってしまった場合は、すぐにGoogle AI Studioでそのキーを無効化し、新しいキーに差し替えます。</p>
+    </div>
+
+    <h3>無料枠について（目安）</h3>
+    <p>新規プロジェクトは通常Free Tier（無料枠）で始まり、対応モデルなら入出力トークンは無料ですが、モデルごとに「1分あたりのリクエスト数」「1分あたりのトークン数」「1日あたりのリクエスト数」に上限があります。<strong>上限値はモデル・プロジェクト・時期によって変わるため本書には固定値を書きません。</strong>最新の割り当ては必ず<a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>の表示で確認してください。上限に達すると自動課金されるのではなく、通常は<button class="term" type="button">429エラー<span class="tip">Gemini APIの無料枠の上限に一時的に達したときに返るエラー。数分待てば再び使えるようになることが多い。</span></button>（<code>429 Too Many Requests</code>）となって一時的に生成できなくなるだけです（接続ピルが「Gemini error」になる）。より高い上限が必要な場合は、APIプロジェクトへCloud Billingを接続してPaid Tierへ移行します（Workspaceの契約料金とは別に費用が発生します）。</p>
+  </section>
+
+  <section id="roadmap">
+    <div class="sec-head"><span class="sec-num">07</span><h2>足りないところ・次にやること</h2></div>
+    <p class="sec-sub">今のStory Bridgeに欠けている部分を、優先度の高い順に並べます</p>
+
+    <div class="rank-legend">
+      <span><span class="dot" style="background:var(--flag);"></span>必須（学校運用に移す前に対応）</span>
+      <span><span class="dot" style="background:var(--status-todo-ink);"></span>重要（早めに対応）</span>
+      <span><span class="dot" style="background:var(--status-later-ink);"></span>検討（声が高まってから）</span>
+    </div>
+
+    <div class="notice info" style="margin-top:0;">
+      <span class="notice-label">対応済み</span>
+      <p>旧<code>docs/story-bridge-manual.md</code>は削除し、<code>docs/deployment-and-handover.md</code>の冒頭に本書へのリンクを追記しました。Makerもセットアップ完了後に取り壊し済みのため、「ステップ4の接続トークンが死んだ機能のまま残っている」問題も解消しています（02章参照）。</p>
+    </div>
+
+    <div class="stack">
+      <div class="card gap-card">
+        <div class="card-head"><h4>ディスク上に実際の秘密情報が残っている</h4><span class="badge rank-must">必須</span></div>
+        <p class="gap-now"><code>prototype/.env</code>と<code>prototype/.demo-access.txt</code>に、過去のデモで使った本物のGemini APIキーとアクセスコードがそのまま残っている。</p>
+        <p class="gap-fix"><b>直すなら:</b> 両方のキー・コードをすぐにローテーションし、以後は秘密情報をチャットやスクリーンショットに貼らないルールを徹底する。</p>
+      </div>
+      <div class="card gap-card">
+        <div class="card-head"><h4>SETUP-GUIDE.mdにCreatorのデプロイ手順がまるごと無い</h4><span class="badge rank-must">必須</span></div>
+        <p class="gap-now">SETUP-GUIDE.mdはMaker（Part 2-5）とReader（Part 6-9）のデプロイしか説明しておらず、Creator本体の作成・スクリプトプロパティ設定・デプロイ手順が書かれていない。末尾の「この確認後に実装するもの」も、すでに実装済みのCreatorの直接公開機能を「未実装」として書いている。</p>
+        <p class="gap-fix"><b>直すなら:</b> 本書06章の内容をベースに、SETUP-GUIDE.mdへCreatorのPartを追加し、末尾のTODOリストを現状に合わせて書き換える。</p>
+      </div>
+      <div class="card gap-card">
+        <div class="card-head"><h4>下書き保存機能の有無が未確認</h4><span class="badge rank-important">重要</span></div>
+        <p class="gap-now">Code.gsに「Save draft」に相当する関数が見当たらない。公開前に画面を閉じたり再読み込みしたりした場合の挙動が未確認。</p>
+        <p class="gap-fix"><b>直すなら:</b> 実機で再読み込み時の挙動を確認し、必要なら会話・物語・ページ割りの自動保存を追加する。</p>
+      </div>
+      <div class="card gap-card">
+        <div class="card-head"><h4>Readerの興味タグ検索・その場での新規生成が未実装</h4><span class="badge rank-later">検討</span></div>
+        <p class="gap-now">当初の構想（<code>docs/concept.html</code>）にあった、興味タグで本を探す機能と、その場でアイデアを入力して新しい物語を生成する「Read Mode B」は実装されていない。</p>
+        <p class="gap-fix"><b>直すなら:</b> 本棚が育ってきたタイミングで、タグ検索から着手するのが現実的。その場生成は追加のGemini呼び出し・安全確認の設計から必要。</p>
+      </div>
+      <div class="card gap-card">
+        <div class="card-head"><h4>挿絵の自動生成・自動QAパイプラインが未実装</h4><span class="badge rank-later">検討</span></div>
+        <p class="gap-now"><code>docs/illustration-pipeline.md</code>が描く「参照シート生成→自動QA採点→先生のコンタクトシート確認」は構想のみで、現状は先生がプロンプトをコピーしてWorkspaceのGeminiアプリを手動操作する運用になっている。</p>
+        <p class="gap-fix"><b>直すなら:</b> まずは今の手動運用のまま台数をこなして知見をためる。自動化はコストとレイテンシの検証（illustration-pipeline.mdの「MVP検証」節）から。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="glossary">
+    <div class="sec-head"><span class="sec-num">―</span><h2>用語集</h2></div>
+    <p class="sec-sub">本文中でボタンになっている用語のまとめです。印刷して読む場合はこちらをどうぞ。</p>
+    <div class="gloss">
+      <div class="gloss-row"><div class="gloss-term">Apps Script Webアプリ</div><div class="gloss-def">Googleのサーバー上でJavaScript（Apps Script）を実行し、ブラウザからアクセスできる画面として公開する仕組み。サーバーを自分で借りたり管理したりする必要がない。</div></div>
+      <div class="gloss-row"><div class="gloss-term">デプロイ</div><div class="gloss-def">Apps Scriptエディタ右上の「デプロイ」→「新しいデプロイ」から行う操作。ここで「実行ユーザー」と「アクセスできるユーザー」を選ぶことで、誰がそのURLを開けるかが決まる。</div></div>
+      <div class="gloss-row"><div class="gloss-term">スクリプトプロパティ</div><div class="gloss-def">Apps Scriptプロジェクトごとにサーバー側だけで保持される設定値。<code>PropertiesService</code>から読み書きし、値はブラウザ側のJavaScriptには渡らない。</div></div>
+      <div class="gloss-row"><div class="gloss-term">UrlFetchApp</div><div class="gloss-def">Apps ScriptからGeminiのような外部APIをサーバー側で呼び出すための命令。ブラウザを経由しないため、APIキーが外に漏れにくい。</div></div>
+      <div class="gloss-row"><div class="gloss-term">Gemini Developer API</div><div class="gloss-def">Story Bridgeが呼び出しているGoogleの生成AI API。学校のGoogle Workspaceに標準で入っているGeminiアプリ（チャット画面）とは別サービスで、利用枠も別に管理される。</div></div>
+      <div class="gloss-row"><div class="gloss-term">gemini-3.6-flash 等</div><div class="gloss-def">Creatorが最初に呼び出すモデル名（既定値）。応答に失敗した場合はgemini-3.1-flash-liteに自動で切り替わる。</div></div>
+      <div class="gloss-row"><div class="gloss-term">429エラー</div><div class="gloss-def">Gemini APIの無料枠の上限に一時的に達したときに返るエラー。数分待てば再び使えるようになることが多い。</div></div>
+      <div class="gloss-row"><div class="gloss-term">共有ドライブ</div><div class="gloss-def">個人ではなく組織（学校）が所有するGoogle Driveの領域。担当者が異動しても中身が残る。</div></div>
+      <div class="gloss-row"><div class="gloss-term">Story Bridge Library Data</div><div class="gloss-def">Books・Pages・Contributorsの3シートを持つGoogleスプレッドシート。セットアップ時にMakerが自動作成した、本の情報の保存先。</div></div>
+      <div class="gloss-row"><div class="gloss-term">publishBook</div><div class="gloss-def">Creatorが本を確定して公開するときに呼び出すサーバー側の関数名。スプレッドシートへの行追加とドライブへの画像保存をまとめて行う。</div></div>
+      <div class="gloss-row"><div class="gloss-term">readyToWrite</div><div class="gloss-def">Geminiが会話の中で返す値のひとつ。物語を書き始めるのに十分な材料（はじまり・変化・行動・終わりの感情）が揃ったと判断するとtrueになり、「Make our story」が押せるようになる。</div></div>
+      <div class="gloss-row"><div class="gloss-term">Picture feeling</div><div class="gloss-def">挿絵の雰囲気を選ぶ項目。Cute・Cool・Funny・Magical・Cozy・Colorfulの6種類、または自由入力から選ぶ。</div></div>
+      <div class="gloss-row"><div class="gloss-term">接続ピル</div><div class="gloss-def">Creator画面右上に出る小さな丸ラベル。「Gemini connected」「Free demo」などGeminiとの接続状態をひと目で示す。</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>参照元: <code>docs/concept.html</code>・<code>docs/deployment-and-handover.md</code>・<code>docs/story-conversation-framework.md</code>・<code>docs/illustration-pipeline.md</code>・<code>google-workspace/</code>以下の各Code.gs／HTML・<code>google-workspace/NEW-ARCHITECTURE.md</code>・<code>google-workspace/SETUP-GUIDE.md</code>／本書は2026-09-11時点のコードを直接確認して作成しました。</p>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var openTerm = null;
+    function closeOpen() { if (openTerm) { openTerm.classList.remove('open'); openTerm = null; } }
+    document.querySelectorAll('button.term').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var wasOpen = btn.classList.contains('open');
+        closeOpen();
+        if (!wasOpen) { btn.classList.add('open'); openTerm = btn; }
+      });
+    });
+    document.addEventListener('click', closeOpen);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeOpen(); });
+  })();
+</script>
